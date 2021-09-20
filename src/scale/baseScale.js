@@ -24,21 +24,21 @@ export default class Scale {
     }
     get = (point: Object) => {
         return point && point[this.key];
-    }
+    };
     scalePoint = (point: Object) => {
         return this.scale(this.get(point));
-    }
-    invert = (value: any) => {
-        return this.series.groups.map<Object>((groups) => {
+    };
+    invert = (value: any): Array<any> => {
+        return this.series.groups.map<Object>(groups => {
             const inverted = this.scale.invert(value);
             const sorted = sortBy(this.get)(groups);
             const bisect = bisector(this.get);
             const index = bisect.right(sorted, inverted);
             const d0 = sorted[Math.max(0, index - 1)];
             const d1 = sorted[index];
-            if(!d0) return d1;
-            if(!d1) return d0;
+            if (!d0) return d1;
+            if (!d1) return d0;
             return inverted - this.get(d0) > this.get(d1) - inverted ? d1 : d0;
         });
-    }
+    };
 }
