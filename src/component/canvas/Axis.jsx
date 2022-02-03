@@ -8,7 +8,6 @@ import {renderText as renderDefaultText, renderLine} from '../../util/defaultRen
 import React from 'react';
 import {max} from 'd3-array';
 
-
 type Position = 'top' | 'right' | 'bottom' | 'left';
 type DimensionKey = 'x' | 'y';
 
@@ -17,12 +16,13 @@ type Props = {
     position: Position,
     scales: {
         series: Series,
-        x: ContinuousScale|CategoricalScale,
-        y: ContinuousScale|CategoricalScale
+        x: ContinuousScale | CategoricalScale,
+        y: ContinuousScale | CategoricalScale
     },
 
     // optional
     location?: number | string | Date,
+    axisRef?: any,
 
     // style
     strokeWidth: string,
@@ -30,7 +30,7 @@ type Props = {
     textColor: string,
     textSize: number,
     textOffset: number,
-    textFormat: (mixed) => string,
+    textFormat: mixed => string,
     ticks: Function,
     tickLength: number,
 
@@ -40,9 +40,7 @@ type Props = {
     renderTickLine?: Function
 };
 
-
 export default class AxisRenderable extends React.PureComponent<Props> {
-
     static defaultProps = {
         // Styles
         strokeWidth: 1,
@@ -52,19 +50,19 @@ export default class AxisRenderable extends React.PureComponent<Props> {
         textOffset: 6,
         textFormat: (text: mixed) => String(text),
 
-        ticks: (scale: {ticks: () => Array<mixed>, domain: () => Array<mixed>}) => scale.ticks ? scale.ticks() : scale.domain(),
+        ticks: (scale: {ticks: () => Array<mixed>, domain: () => Array<mixed>}) =>
+            scale.ticks ? scale.ticks() : scale.domain(),
         tickLength: 6,
 
         // Components
         AxisLine: 'line',
         TickLine: 'line',
         Text: 'text'
-
     };
 
     dimension(): DimensionKey {
         const {position} = this.props;
-        return (position === 'top' || position === 'bottom') ? 'x' : 'y';
+        return position === 'top' || position === 'bottom' ? 'x' : 'y';
     }
 
     drawTicks(): Array<Node> {
@@ -87,54 +85,53 @@ export default class AxisRenderable extends React.PureComponent<Props> {
         const offset = 0;
         const strokeWidth = parseInt(this.props.strokeWidth, 10);
 
-        return ticks(scale)
-            .map((tick: any): Node => {
-                const distance = scale(tick) + offset;
-                const formattedTick = textFormat(tick);
+        return ticks(scale).map((tick: any): Node => {
+            const distance = scale(tick) + offset;
+            const formattedTick = textFormat(tick);
 
-                const [x1, y1] = this.getPointPosition(position, distance, strokeWidth / 2);
-                const [x2, y2] = this.getPointPosition(position, distance, strokeWidth / 2 + tickLength);
+            const [x1, y1] = this.getPointPosition(position, distance, strokeWidth / 2);
+            const [x2, y2] = this.getPointPosition(
+                position,
+                distance,
+                strokeWidth / 2 + tickLength
+            );
 
+            const [textX, textY] = this.getPointPosition(
+                position,
+                distance,
+                strokeWidth / 2 + tickLength + textOffset
+            );
 
-                const [textX, textY] = this.getPointPosition(
-                    position,
-                    distance,
-                    strokeWidth / 2 + tickLength + textOffset
-                );
+            const tickLineProps = {
+                x1,
+                y1,
+                x2,
+                y2,
+                strokeWidth: this.props.strokeWidth,
+                stroke: strokeColor
+            };
 
-                const tickLineProps = {
-                    x1,
-                    y1,
-                    x2,
-                    y2,
-                    strokeWidth: this.props.strokeWidth,
-                    stroke: strokeColor
-                };
+            const textProps = {
+                children: formattedTick,
+                fontSize: textSize,
+                fill: textColor,
+                x: textX,
+                y: textY,
+                textAnchor: this.getTextAnchorProp(position),
+                dominantBaseline: this.getAlignmentBaselineProp(position)
+            };
 
-                const textProps = {
-                    children: formattedTick,
-                    fontSize: textSize,
-                    fill: textColor,
-                    x: textX,
-                    y: textY,
-                    textAnchor: this.getTextAnchorProp(position),
-                    dominantBaseline: this.getAlignmentBaselineProp(position)
-                };
-
-                return <g key={tick}>
+            return (
+                <g key={tick}>
                     {renderTickLine({tick, position: tickLineProps})}
                     {renderText({tick, position: textProps})}
-                </g>;
-            });
+                </g>
+            );
+        });
     }
 
     drawAxisLine(): Node {
-        const {
-            renderAxisLine = renderLine,
-            position,
-            strokeColor,
-            strokeWidth
-        } = this.props;
+        const {renderAxisLine = renderLine, position, strokeColor, strokeWidth} = this.props;
 
         const [x1, y1] = this.getPointPosition(position, 0, 0);
         const [x2, y2] = this.getPointPosition(position, this.getLength(), 0);
@@ -152,13 +149,13 @@ export default class AxisRenderable extends React.PureComponent<Props> {
     }
 
     getAlignmentBaselineProp(position: Position): string {
-        if(position === 'left' || position === 'right') return 'middle';
-        if(position === 'top') return 'auto';
+        if (position === 'left' || position === 'right') return 'middle';
+        if (position === 'top') return 'auto';
         return 'hanging';
     }
 
     getTextAnchorProp(position: Position): string {
-        switch(position) {
+        switch (position) {
             case 'top':
             case 'bottom':
                 return 'middle';
@@ -182,15 +179,15 @@ export default class AxisRenderable extends React.PureComponent<Props> {
         const width = max(x.range);
         const height = max(y.range);
 
-        if(this.props.location != undefined) {
-            if(dimension === 'y') {
+        if (this.props.location != undefined) {
+            if (dimension === 'y') {
                 locationValue = x.scale(this.props.location);
             } else {
                 locationValue = y.scale(this.props.location);
             }
         }
 
-        switch(position) {
+        switch (position) {
             case 'top':
                 return [distance, locationValue - offset];
 
@@ -211,11 +208,11 @@ export default class AxisRenderable extends React.PureComponent<Props> {
     }
 
     render(): Node {
-        return <g shapeRendering="crispedges">
-            <g>{this.drawAxisLine()}</g>
-            <g>{this.drawTicks()}</g>
-        </g>;
+        return (
+            <g shapeRendering="crispedges" ref={this.props.axisRef}>
+                <g>{this.drawAxisLine()}</g>
+                <g>{this.drawTicks()}</g>
+            </g>
+        );
     }
 }
-
-
