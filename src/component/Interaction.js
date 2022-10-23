@@ -3,7 +3,7 @@ import Series from '../series/Series';
 import ContinuousScale from '../scale/continuousScale';
 import CategoricalScale from '../scale/categoricalScale';
 
-import React, {useEffect, useState, useCallback} from 'react';
+import React, {useEffect, useState, useCallback, useRef} from 'react';
 import useMousePosition from '@react-hook/mouse-position';
 import {bisectRight} from 'd3-array';
 
@@ -41,7 +41,12 @@ type Props<A> = {
 };
 export default function Interaction<A>(props: Props<A>) {
     const [item, setItem] = useState(null);
-    const [position, ref] = useMousePosition(0, 0, props.fps || 60);
+    const ref = useRef(null);
+    const position = useMousePosition(ref, {
+        enterDelay: 0,
+        leaveDelay: 0,
+        fps: props.fps || 60
+    });
     const {width, height} = props;
     const {x, y, series} = props.scales;
 
