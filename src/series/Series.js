@@ -1,7 +1,6 @@
 // @flow
 import getIn from 'unmutable/getIn';
 
-
 export type Point = {[string]: any};
 
 export type SeriesConfig = {
@@ -63,16 +62,15 @@ export default class Series {
         return this.groups.map(group => group[index]);
     }
 
-    sumRow(key: string, index: number){
+    sumRow(key: string, index: number) {
         return this.getGroup(index).reduce((acc, row) => acc + (row[key] || 0), 0);
     }
 
-    sumColumn(key: string, index: number){
+    sumColumn(key: string, index: number) {
         return this.groups.reduce((acc, group) => acc + (group[index][key] || 0), 0);
     }
 
-    sum(key: string): number{
+    sum(key: string): number {
         return this.rawData.reduce((acc, point) => acc + (point[key] || 0), 0);
     }
-
 }

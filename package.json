@@ -24,6 +24,7 @@
   "devDependencies": {
     "@babel/cli": "^7.2.3",
     "@babel/core": "^7.4.0",
+    "@babel/plugin-proposal-optional-chaining": "^7.21.0",
     "babel-plugin-extract-flow-types": "^1.0.1",
     "babel-plugin-flow-react-proptypes": "^25.0.0",
     "babel-preset-blueflag": "^1.0.0",

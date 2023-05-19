@@ -1,18 +1,15 @@
 {
     "presets": [
-        ["blueflag", {
-          "browser": true
-        }]
+        [
+            "blueflag",
+            {
+                "browser": true
+            }
+        ]
     ],
-    "env": {
-        "production": {
-            "plugins": [
-                ["babel-plugin-extract-flow-types", {"srcDir": "src", "outDir": "lib"}]
-            ]
-        }
-    },
-    "ignore": [
-        "example/**",
-        "**/*-test.js"
-    ]
+    "plugins": [
+        ["babel-plugin-extract-flow-types", {"srcDir": "src", "outDir": "lib"}],
+        "@babel/plugin-proposal-optional-chaining"
+    ],
+    "ignore": ["example/**", "**/*-test.js"]
 }
