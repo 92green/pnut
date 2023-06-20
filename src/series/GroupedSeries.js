@@ -44,7 +44,7 @@ export default class GroupedSeries extends Series {
         const groups = Object.entries(groupedItems).map(([key, group]) => {
             // Find the first instance of each group key
             const baseValues = Object.fromEntries(
-                groupKey.map(key => [key, group.find(ii => ii[key])?.[key] || {}])
+                groupKey.map(key => [key, group.find(ii => ii[key])?.[key]])
             );
 
             // Create the row as a map with default values
